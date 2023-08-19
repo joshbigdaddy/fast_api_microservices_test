@@ -1,0 +1,9 @@
+version : '3'
+services : 
+  fast-api:
+    build: ../python/front_api_service
+    ports:
+      - 5001:80
+#docker-compose -f .\front_api_compose.yml build
+#docker-compose -f .\front_api_compose.yml up
+#curl http://localhost:5001
