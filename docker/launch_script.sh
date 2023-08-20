@@ -7,3 +7,5 @@ docker compose -f mongo_compose.yml up
 #FRONT API BUILDING
 docker-compose -f .\front_api_compose.yml build
 docker-compose -f .\front_api_compose.yml up
+
+docker run --name my-redis -p 6379:6379 -d redis
