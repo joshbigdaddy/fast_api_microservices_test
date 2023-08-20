@@ -1,3 +1,4 @@
 Python Developer - challenge.pdf
 __pycache__/
 .gitignore
+credentials.py

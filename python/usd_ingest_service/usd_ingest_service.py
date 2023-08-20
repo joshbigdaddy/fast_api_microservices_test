@@ -2,6 +2,7 @@ from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
 from pymongo import MongoClient
+import credentials
 
 url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 parameters = {
@@ -9,7 +10,7 @@ parameters = {
 }
 headers = {
   'Accepts': 'application/json',
-  'X-CMC_PRO_API_KEY': '96772d27-f76f-4c82-b06d-03c8edaa6e26',
+  'X-CMC_PRO_API_KEY': credentials.API_KEY,
 }
 
 session = Session()
