@@ -37,6 +37,5 @@ async def get_items(limit: int = 10):
 @app.on_event("startup")
 async def startup():
     redis = aioredis.from_url("redis://host.docker.internal", encoding="utf8", decode_responses=True)
-    FastAPICache.init(RedisBackend(redis), pr
-                      efix="fastapi-cache")
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 #http://localhost/docs to see the swagger API
