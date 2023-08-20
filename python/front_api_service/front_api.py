@@ -2,42 +2,41 @@ from fastapi import FastAPI
 import uvicorn
 from pymongo import MongoClient
 
-import redis
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache.decorator import cache
+from redis import asyncio as aioredis
 import time
-
-rd = redis.Redis(host="host.docker.internal", port=6379, db=0)
 
 app = FastAPI()
 
+@cache()
+async def get_cache():
+    return 1
 
 @app.get('/cache')
+@cache(expire=60)
 async def get_items_2():
-    cache = rd.get("time")
-    if cache:
-        cache
-    else:
-        rd.set("time", str(time.time()))
-        rd.expire("time", 180)
-        return str(time.time())
-    
+    return str(time.time())
 
 
 
 @app.get('/')
+@cache(expire=60)
 async def get_items(limit: int = 10):
-    cache = rd.get(limit)
-    if cache:
-        print("cache result")
-        return json.loads(cache)
-    else:
-        client = MongoClient('mongodb://root:example@host.docker.internal', 27017)
+    client = MongoClient('mongodb://root:example@host.docker.internal', 27017)
+ 
+    # Database Name
+    db = client["local"]
     
-        # Database Name
-        db = client["local"]
-        
-        # Collection Name
-        col = db["assets"]
-        result = list(col.find().limit(limit))
-        rd.set(limit, result)
-        rd.expire(limit, 180)
-        return {"time":str(time.time()),"data":str(result)}
+    # Collection Name
+    col = db["assets"]
+    result = list(col.find().limit(limit))
+    return {"time":str(time.time()),"data":str(result)}
+
+@app.on_event("startup")
+async def startup():
+    redis = aioredis.from_url("redis://host.docker.internal", encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), pr
+                      efix="fastapi-cache")
+#http://localhost/docs to see the swagger API
