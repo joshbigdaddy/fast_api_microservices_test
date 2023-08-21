@@ -1,3 +1,11 @@
+## ARCHITECTURE 
+To give a better understanding of the whole project, here is a diagram:
+<p align="center">
+  <img src="Architecture.png" width="350" title="Diagram">
+<p>
+The focus was to create something very similar to the real architecture that was being used at the enterprise, so as to show better knowledge of known technologies. The use of MongoDB as the core of the information comes to fulfill that statement. I have made two different docker containers for both API ingestion and those connect to MongoDB separately and inform 2 different tables, as if we were reading information (which we actually are) from 2 different sources with different times of refresh. Doing this we simulate better a multi service architecture.
+
+Finally we got the FRONT_API which will be our door to the world and the only part of our project that can receive external requests. There is also a REDIS container attatched to this one to handle cache of requests, allowing to reduce MongoDB calls in cases of numerous calls with the same information required.
 
 ## PERFORMANCE
 ### INGESTION IMPROVEMENTS
@@ -11,6 +19,10 @@ I have used this documentation as a reference for a good practice:
 - https://saksham-malhotra2196.medium.com/the-efficient-way-of-using-multiprocessing-with-pymongo-a7f1cf72b5b7
 
 This procedure has been applied to both ingestion modules.
+
+### API FRONT IMPROVEMENTS
+
+I have been researching about how to maximize MongoDB's performance when doing data extraction. And also I have
 
 ### ABOUT API REQUEST PAGINATION
 
