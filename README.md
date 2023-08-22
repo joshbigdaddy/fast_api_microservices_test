@@ -19,10 +19,14 @@ I have used this documentation as a reference for a good practice:
 - [The efficient way of using multiprocessing with pymongo](https://saksham-malhotra2196.medium.com/the-efficient-way-of-using-multiprocessing-with-pymongo-a7f1cf72b5b7)
 
 This procedure has been applied to both ingestion modules.
-
 ### API FRONT IMPROVEMENTS
 
 I have been researching about how to maximize MongoDB's performance when doing data extraction. And also I have implemented cache, which can be achieved with ***Redis*** and ***fast-api-cache2***, which is the best option and the cleanest I have found. Redis is common in all the examples I have seen and it works perfectly with this library, providing a very clean set of properties that can be quite scalable for future endpoint features.
+
+We have also worked improving the way we are going to use the data from MongoDB adding an index to ***symbol*** in **USD_values** as it is the table from which we are going to be doing the "join" into **assets** . With this index we are making queries much more efficient and also we are going to make the joins doing unique queries using that index (which is a common value with **assets** and also is the only one that can be a match for sure), for this we are emulating the same thing done previously in the ingestion and we are going to use pooling for doing queries in concurrence to retrieve the values and set them in the format we want. Note that the order is being considered for the assets list, as [map function](https://docs.python.org/dev/library/multiprocessing.html#multiprocessing.pool.Pool.map) returns data ordered.
+
+
+Note: Maybe there is another field to match both tables, but I lack the functional knowledge as the ids provided seem not related with the coin.
 
 ### ABOUT API REQUEST PAGINATION
 
@@ -51,3 +55,4 @@ During the development of this test, there has been several out of scope ideas t
 ](https://systemweakness.com/securing-sensitive-data-in-python-best-practices-for-storing-api-keys-and-credentials-2bee9ede57ee)
 - [FatAPI in Docker Youtube Simple Tutorial](https://www.youtube.com/watch?v=EJ2djjnfXPc)
 - [FastAPI Docker Oficial](https://fastapi.tiangolo.com/deployment/docker/)
+- [Python Pooling] (https://docs.python.org/dev/library/multiprocessing.html#multiprocessing.pool.Pool.map)

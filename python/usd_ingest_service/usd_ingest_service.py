@@ -10,9 +10,10 @@ cpu_count = multiprocessing.cpu_count()
 client = MongoClient('mongodb://root:example@host.docker.internal', 27017,maxPoolSize=cpu_count+1)
 def insert_chunk(chunk):
     db = client['local']
-    collection_assets = db['USD_values']
+    collection_usd = db['USD_values']
     if len(chunk)>1:
-        collection_assets.insert_one(chunk)
+        collection_usd.insert_one(chunk)
+
 
 if __name__ == '__main__':
 
@@ -31,8 +32,6 @@ if __name__ == '__main__':
   try:
     response = session.get(url)
     data = json.loads(response.text)
-    client = MongoClient('mongodb://root:example@host.docker.internal', 27017)
-
     db = client['local']
     collection_status = db['status']
     collection_usd = db['USD_values']
@@ -48,7 +47,7 @@ if __name__ == '__main__':
     #a=time.time()
     result = pool.map(insert_chunk,usd,chunksize=documents_number)   #creates chunks of total_documents_count/cpu_count  pool.close()
     #print(time.time()-a)
-
+    collection_usd.create_index( "symbol")
     client.close()
   except (ConnectionError, Timeout, TooManyRedirects) as e:
     print(e)

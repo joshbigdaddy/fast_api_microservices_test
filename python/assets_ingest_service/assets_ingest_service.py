@@ -48,10 +48,11 @@ def convert_str_to_numeric(d):
 
     return d
 
-def insert_chunk(chunk):
+def insert_chunk(chunk,rank):
     db = client['local']
     collection_assets = db['assets']
     if len(chunk)>1:
+        chunk['rank'] = rank
         collection_assets.insert_one(convert_numeric_to_str(chunk))
 if __name__ == '__main__':
     url = 'https://min-api.cryptocompare.com/data/top/totaltoptiervolfull'
@@ -79,7 +80,7 @@ if __name__ == '__main__':
         pool = multiprocessing.Pool(processes=cpu_count)
         documents_number = int(total_documents_count/cpu_count)
         #a=time.time()
-        result = pool.map(insert_chunk,assets,chunksize=documents_number)   #creates chunks of total_documents_count/cpu_count  pool.close()
+        result = pool.starmap(func=insert_chunk,iterable= zip(assets,[i for i in range(1, total_documents_count+1)]),chunksize=documents_number)   #creates chunks of total_documents_count/cpu_count  pool.close()
         #print(time.time()-a)
         client.close()
     except (ConnectionError, Timeout, TooManyRedirects) as e:
