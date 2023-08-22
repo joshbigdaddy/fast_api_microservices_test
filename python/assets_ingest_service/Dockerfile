@@ -1,5 +1,6 @@
 FROM python:3.8
 COPY . /usr/src/app
 WORKDIR /usr/src/app
+RUN python3 -m unittest tests/*
 RUN python3 -m pip install -r requirements.txt
 CMD ["python3","assets_ingest_service.py"]

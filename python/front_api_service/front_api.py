@@ -52,9 +52,9 @@ async def get_items(limit: int = 10):
     assets = list(col.find().sort("rank").limit(limit))
     pool = multiprocessing.Pool(processes=cpu_count)
     documents_number = int(limit/cpu_count)
-    a=time.time()
+    #a=time.time()
     result = pool.map(create_register,assets,chunksize=documents_number)   #creates chunks of total_documents_count/cpu_count  pool.close()
-    print(time.time()-a)
+    #print(time.time()-a)
     return json.dumps(result)
 
 @app.on_event("startup")
