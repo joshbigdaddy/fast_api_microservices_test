@@ -1,10 +1,11 @@
-from requests import Request, Session
+from requests import Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
 from pymongo import MongoClient
 import multiprocessing
 import time
 import credentials
+import datetime
 
 cpu_count = multiprocessing.cpu_count()
 client = MongoClient('mongodb://root:example@host.docker.internal', 27017,maxPoolSize=cpu_count+1)
@@ -43,12 +44,13 @@ if __name__ == '__main__':
     total_documents_count = len(usd);
     pool = multiprocessing.Pool(processes=cpu_count)
     documents_number = int(total_documents_count/cpu_count)
-    collection_status.insert_one(data.get("status"))
     #a=time.time()
     result = pool.map(insert_chunk,usd,chunksize=documents_number)   #creates chunks of total_documents_count/cpu_count  pool.close()
     #print(time.time()-a)
     collection_usd.create_index( "symbol")
+    collection_status.insert_one({"timestamp": datetime.datetime.now()})
     client.close()
+    pool.close()
   except (ConnectionError, Timeout, TooManyRedirects) as e:
     print(e)
 

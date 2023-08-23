@@ -4,6 +4,7 @@ import json
 from pymongo import MongoClient
 import multiprocessing
 import time
+import datetime
 
 cpu_count = multiprocessing.cpu_count()
 client = MongoClient('mongodb://root:example@host.docker.internal', 27017,maxPoolSize=cpu_count+1)
@@ -73,16 +74,19 @@ if __name__ == '__main__':
         total_documents_count = len(data.get("Data"));
         assets = data.get("Data")
         db = client['local']
-        #collection_status = db['status']
+        collection_status = db['status_assets']
         collection_assets = db['assets']
         #TRUNCATE PREVIOUS DATA
         collection_assets.delete_many({})
+        collection_status.delete_many({})
         pool = multiprocessing.Pool(processes=cpu_count)
         documents_number = int(total_documents_count/cpu_count)
         #a=time.time()
         result = pool.starmap(func=insert_chunk,iterable= zip(assets,[i for i in range(1, total_documents_count+1)]),chunksize=documents_number)   #creates chunks of total_documents_count/cpu_count  pool.close()
         #print(time.time()-a)
+        collection_status.insert_one({"timestamp": datetime.datetime.now()})
         client.close()
+        pool.close()
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         print(e)
 

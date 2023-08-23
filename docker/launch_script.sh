@@ -14,6 +14,7 @@ docker-compose -f .\asset_ingest_compose.yml up
 
 ##FRONT API ----------------------------------------------------------------
 #Redis Server UP handling cache for the processes
+docker rm my-redis
 docker run --name my-redis -p 6379:6379 -d redis
 #FRONT API BUILDING
 docker-compose -f .\front_api_compose.yml build

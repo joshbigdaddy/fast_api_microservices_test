@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import uvicorn
 from pymongo import MongoClient
 
@@ -10,7 +10,6 @@ import time
 import multiprocessing
 import time
 import json
-import bson
 
 app = FastAPI()
 cpu_count = multiprocessing.cpu_count()
@@ -30,6 +29,22 @@ def create_register(chunk):
     res= {"Rank":chunk.get("rank"),"symbol":id, "Price USD":price}
     return res
 
+def wait_status_ready(db):
+    counter=0
+    while True:
+        status = db["status"]
+        status_assets = db["status_assets"]
+
+        status_cursor=status.find()
+        status_assets_cursor=status_assets.find()
+
+        if len(status_cursor)==0 or len(status_assets_cursor)==0:
+            time.sleep(5)
+        else:
+            break
+        counter+=1
+        if counter >= 6:
+            raise HTTPException(status_code=408, detail="Timeout due to data not present in origin")
 
 @cache()
 async def get_cache():
@@ -37,18 +52,23 @@ async def get_cache():
 
 @app.get('/cache')
 @cache(expire=60)
-async def get_items_2():
+async def get_cache():
     return str(time.time())
 
 @app.get('/')
 @cache(expire=60)
 async def get_items(limit: int = 10):
- 
+    if limit <= 0:
+        #we raise a Unprocessable Entity CODE which means that the get is OK but the args are not
+        raise HTTPException(status_code=422, detail="Limit value has a default of 10 and it must be higher than 0")
     # Database Name
     db = client["local"]
     
     # Collection Name
     col = db["assets"]
+    #We check if status dbs are ready and we wait 5 seconds for them to be ready. this grants us with a bit of time to answer requests while data is being regenerated
+    wait_status_ready(db)
+
     assets = list(col.find().sort("rank").limit(limit))
     pool = multiprocessing.Pool(processes=cpu_count)
     documents_number = int(limit/cpu_count)
