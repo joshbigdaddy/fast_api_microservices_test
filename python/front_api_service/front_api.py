@@ -38,7 +38,7 @@ def wait_status_ready(db):
         status_cursor=status.find()
         status_assets_cursor=status_assets.find()
 
-        if len(status_cursor)==0 or len(status_assets_cursor)==0:
+        if len(list(status_cursor)) or len(list(status_assets_cursor))==0:
             time.sleep(5)
         else:
             break
@@ -67,7 +67,7 @@ async def get_items(limit: int = 10):
     # Collection Name
     col = db["assets"]
     #We check if status dbs are ready and we wait 5 seconds for them to be ready. this grants us with a bit of time to answer requests while data is being regenerated
-    wait_status_ready(db)
+    #wait_status_ready(db)
 
     assets = list(col.find().sort("rank").limit(limit))
     pool = multiprocessing.Pool(processes=cpu_count)
