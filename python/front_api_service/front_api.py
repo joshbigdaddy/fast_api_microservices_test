@@ -10,6 +10,7 @@ import time
 import multiprocessing
 import time
 import json
+import os
 
 app = FastAPI()
 cpu_count = multiprocessing.cpu_count()
@@ -67,7 +68,8 @@ async def get_items(limit: int = 10):
     # Collection Name
     col = db["assets"]
     #We check if status dbs are ready and we wait 5 seconds for them to be ready. this grants us with a bit of time to answer requests while data is being regenerated
-    #wait_status_ready(db)
+    if not bool(os.getenv("TEST_RUNNING", "False")):
+        wait_status_ready(db)
 
     assets = list(col.find().sort("rank").limit(limit))
     pool = multiprocessing.Pool(processes=cpu_count)

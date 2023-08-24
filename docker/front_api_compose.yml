@@ -7,3 +7,4 @@ services :
 #docker-compose -f .\front_api_compose.yml build
 #docker-compose -f .\front_api_compose.yml up
 #curl http://localhost:5001
+#http://localhost:5001/docs for documentation with swagger

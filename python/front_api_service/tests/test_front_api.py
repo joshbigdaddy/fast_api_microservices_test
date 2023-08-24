@@ -4,9 +4,9 @@ from starlette.testclient import TestClient
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 import sys
+import os
 sys.path.append('./')
 from front_api import app
-
 
 
 @pytest.fixture(autouse=True)

@@ -1,3 +1,24 @@
+# Introduction
+This project comes to create an example of API Ingestion, MongoDB use in Python and how to handle all this information with FastAPI in a dockerized environment. To achieve this goal I have created dockerized services that connect between themselves using MongoDB as the core of the information.
+# How to run it
+In the project, there is a folder called **docker**, in this folder there are all the configuration files needed to run everything, but the most important one is the **launch_script.sh**. This script has all the needed commands to get everything up and runnning and also doing a first ingestion.
+```
+bash ./docker/launch_script.sh
+```
+Inside it we can see that it builds all docker images before running them and launches tests and dependencies for their images:
+
+1. Kills everything in docker
+2. Runs MongoDB in detached mode with a MongoExpress module to check Mongo
+3. Builds and runs both ingestion modules
+4. Runs fresh Redis cache container
+5. Runs API front
+
+## Usefull URLs
+- **MongoExpress:** http://localhost:8081/
+- **FrontAPI Swagger docs:** http://localhost:5001/docs
+- **FrontAPI Sample call:** http://localhost:5001/?limit=50
+
+# Extra information
 ## ARCHITECTURE 
 To give a better understanding of the whole project, here is a diagram:
 <p align="center">
@@ -28,6 +49,8 @@ We have also worked improving the way we are going to use the data from MongoDB 
 
 Note: Maybe there is another field to match both tables, but I lack the functional knowledge as the ids provided seem not related with the coin.
 
+Finally, I have developed a method that uses **status** information to wait for the data to be ingested. I have created a timestamp marker in 2 collections status and status_assets which are deleted when starting ingestion and added again after that. That way we can check when retrieving the information if the process is finished and also when the information was last updated.
+
 ### ABOUT API REQUEST PAGINATION
 
 I have checked both APIs docs to see if pagination was available, but as these examples are very small, they do not provide pagination, so then improvements in performance have been only on our side.  
@@ -55,4 +78,6 @@ During the development of this test, there has been several out of scope ideas t
 ](https://systemweakness.com/securing-sensitive-data-in-python-best-practices-for-storing-api-keys-and-credentials-2bee9ede57ee)
 - [FatAPI in Docker Youtube Simple Tutorial](https://www.youtube.com/watch?v=EJ2djjnfXPc)
 - [FastAPI Docker Oficial](https://fastapi.tiangolo.com/deployment/docker/)
-- [Python Pooling] (https://docs.python.org/dev/library/multiprocessing.html#multiprocessing.pool.Pool.map)
+- [Python Pooling](https://docs.python.org/dev/library/multiprocessing.html#multiprocessing.pool.Pool.map)
+- [FastAPI Testing](https://fastapi.tiangolo.com/deployment/docker/)
+- [FatAPI Cache Docs](https://github.com/long2ice/fastapi-cache/blob/main/tests/test_decorator.py)
