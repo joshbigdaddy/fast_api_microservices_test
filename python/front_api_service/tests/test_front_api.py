@@ -20,10 +20,10 @@ def test_read_item():
     with TestClient(app) as client:
         response = client.get("/?limit=20")
         assert response.status_code == 200
-        counter = response.text.count("null")
+        counter = len(response.json().get("data"))
         assert counter == 20
         response = client.get("/")
-        counter = response.text.count("null")
+        counter = len(response.json().get("data"))
         assert counter == 10
         
 def test_wrong_limit_0():

@@ -7,3 +7,4 @@ RUN pytest tests
 RUN export TEST="False"
 CMD ["uvicorn","front_api:app","--host","0.0.0.0","--port","80"]
 #uvicorn front_api:app --host 0.0.0.0 --port 80
+# FOR TESTS TO RUN -- MONGODB CONTAINER MUST BE ON

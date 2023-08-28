@@ -26,7 +26,6 @@ def create_register(chunk):
         price = usd[0].get("quote").get("USD").get("price")
     else:
         price = 0.0
-    
     res= {"Rank":chunk.get("rank"),"symbol":id, "Price USD":price}
     return res
 
@@ -73,11 +72,11 @@ async def get_items(limit: int = 10):
 
     assets = list(col.find().sort("rank").limit(limit))
     pool = multiprocessing.Pool(processes=cpu_count)
-    documents_number = int(limit/cpu_count)
+    documents_number = max(int(limit/cpu_count),1)
     #a=time.time()
     result = pool.map(create_register,assets,chunksize=documents_number)   #creates chunks of total_documents_count/cpu_count  pool.close()
     #print(time.time()-a)
-    return json.dumps(result)
+    return {"last_status_information":list(db["status"].find())[0].get("timestamp"),"data": result}
 
 @app.on_event("startup")
 async def startup():
